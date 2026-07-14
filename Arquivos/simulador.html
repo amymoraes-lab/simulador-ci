@@ -1,0 +1,1955 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Simulador de Crédito Imobiliário · Franq</title>
+<link rel="stylesheet" href="colors_and_type.css" />
+<style>
+  @font-face {
+    font-family: 'NIB Pro';
+    src: url('assets/fonts/NibPro-SemiBold.ttf') format('truetype');
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  /* WCAG AA-safe tokens (≥4.5:1 sobre branco) */
+  :root {
+    --text-muted: #5C6470;     /* substitui --oliva-dark p/ texto: 6.4:1 */
+    --text-muted-soft: #6B7280; /* 5.4:1 */
+    --danger-text: #C0202B;    /* substitui --danger p/ texto: 6.0:1 */
+  }
+
+  /* ==========================================================
+     Layout shell — beFranq admin style
+     ========================================================== */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--branco);
+    color: var(--azul-dark);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.45;
+    min-height: 100vh;
+  }
+
+  /* ==========================================================
+     Page hero (title block under topbar)
+     ========================================================== */
+  .page-hero {
+    background: var(--azul-dark);
+    color: #fff;
+    padding: 56px 40px 60px;
+    border-bottom: 1px solid var(--cinza-borda);
+    position: relative;
+    overflow: hidden;
+  }
+  .page-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 88% 30%, rgba(104,123,234,0.35), transparent 55%),
+      linear-gradient(135deg, rgba(8,14,28,0.0) 0%, rgba(19,28,57,0.25) 60%, rgba(91,108,245,0.25) 100%);
+    pointer-events: none;
+  }
+  .page-hero-inner {
+    position: relative; z-index: 1;
+    max-width: 1280px; margin: 0 auto;
+  }
+  .page-hero p.page-hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+    border: 1px solid #fff;
+    border-radius: 40px;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 0;
+    text-transform: none;
+    font-weight: 400;
+    color: #fff !important;
+    margin: 0 0 24px;
+    width: fit-content;
+  }
+  .page-hero p.page-hero-eyebrow svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    display: block;
+  }
+  .page-hero h1 {
+    font-family: 'NIB Pro', 'DM Serif Display', Georgia, serif;
+    font-weight: 400;
+    font-size: 36px; line-height: 1.15; letter-spacing: -0.01em;
+    margin: 0; max-width: 800px;
+    color: #fff;
+  }
+  .page-hero h1 .accent { color: #E6E9FD; }
+  .page-hero p {
+    margin: 14px 0 0; max-width: 720px;
+    font-size: 15px; line-height: 1.55;
+    color: rgba(255,255,255,0.78);
+  }
+  .page-hero p b { color: #fff; font-weight: 600; }
+  @media (max-width: 720px) {
+    .page-hero { padding: 36px 20px 40px; }
+    .page-hero h1 { font-size: 26px; }
+    .page-hero p { font-size: 14px; }
+  }
+
+  /* ==========================================================
+     Top topbar (slim)
+     ========================================================== */
+  .topbar {
+    height: 92px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 64px;
+    background: #131C25;
+    font-family: 'DM Sans', sans-serif;
+    color: #fff;
+    z-index: 19999;
+    position: relative;
+  }
+  .topbar-logo { height: 30px; width: 132px; display: block; }
+  .topbar-right {
+    display: flex; align-items: center; gap: 40px;
+    position: relative; z-index: 20000;
+  }
+  .topbar-userblock {
+    display: flex; align-items: center; gap: 4px;
+  }
+  .topbar-avatar {
+    width: 45px; height: 45px; border-radius: 50%;
+    background: #2A3340; color: #fff;
+    display: grid; place-items: center;
+    font-weight: 600; font-size: 14px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .topbar-avatar img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .topbar-whatsapp {
+    width: 32px; height: 32px;
+    display: grid; place-items: center;
+    background: transparent; border: 0; padding: 0;
+    color: #fff; cursor: pointer;
+    border-radius: 50%;
+    transition: background 0.2s ease;
+  }
+  .topbar-whatsapp:hover { background: rgba(255,255,255,0.08); }
+  .topbar-whatsapp svg { width: 16px; height: 16px; display: block; }
+  .topbar-divider {
+    width: 32px; height: 0;
+    border-top: 1px solid #e5e5e5;
+    transform: rotate(270deg);
+  }
+  .topbar-enter {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: transparent; border: 0; padding: 8px 4px;
+    color: #fff; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px; line-height: 24px; font-weight: 500;
+    transition: opacity 0.2s ease;
+  }
+  .topbar-enter:hover { opacity: 0.8; }
+  .topbar-enter svg {
+    width: 24px; height: 24px;
+    stroke: currentColor;
+    display: block;
+  }
+  .topbar-username {
+    font-size: 16px; line-height: 24px;
+    font-weight: 500; color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    text-decoration: underline;
+    text-underline-position: from-font;
+  }
+
+  /* ==========================================================
+     Page container
+     ========================================================== */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 28px 40px 100px;
+  }
+
+  /* Breadcrumb */
+  .crumbs {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  .crumbs a, .crumbs button {
+    background: none; border: none; padding: 0;
+    color: var(--text-muted);
+    font: inherit; cursor: pointer;
+    text-decoration: none;
+  }
+  .crumbs a:hover, .crumbs button:hover { color: var(--azul-dark); }
+  .crumbs .crumb-current {
+    color: var(--azul-dark); font-weight: 500;
+  }
+  .crumbs .crumb-sep { color: var(--cinza-borda); }
+
+  /* Progress linear */
+  .progress {
+    height: 6px;
+    background: #ECECF1;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 14px;
+    position: relative;
+  }
+  .progress-bar {
+    height: 100%;
+    width: 50%;
+    background: var(--azul-franqueza);
+    border-radius: 999px;
+    transition: width var(--dur-med) var(--ease-out);
+  }
+
+  /* ==========================================================
+     Two-column grid (form ↔ result)
+     ========================================================== */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    gap: 40px;
+    margin-top: 36px;
+    align-items: stretch;
+  }
+  .form-col, .result-col { display: flex; flex-direction: column; }
+  .form { flex: 1; }
+  .form-actions { margin-top: auto !important; }
+  .result-table.is-active { flex: 1; display: flex; flex-direction: column; }
+  .result-table.is-active .result-cta { margin-top: auto; }
+  .vdivider {
+    background: var(--cinza-borda);
+    width: 1px;
+    align-self: stretch;
+    min-height: 600px;
+  }
+
+  /* Section title (form + result share style) */
+  .section-title {
+    font-family: var(--font-sans);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--azul-dark);
+    margin: 0 0 30px;
+    letter-spacing: -0.005em;
+  }
+  .section-divider {
+    border: none;
+    border-top: 1px solid var(--cinza-borda);
+    margin: 0 0 26px;
+  }
+
+  /* ==========================================================
+     Form
+     ========================================================== */
+  .form { display: flex; flex-direction: column; gap: 14px; }
+  .form-actions { margin-top: 8px; display: flex; justify-content: flex-end; align-items: center; gap: 16px; }
+  .form-actions .btn { width: auto; min-width: 260px; }
+  .btn-link-clear {
+    background: transparent;
+    border: 0;
+    padding: 6px 4px;
+    color: #6B7280;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+  }
+  .btn-link-clear:hover { text-decoration: underline; }
+  .result-cta { margin-top: 16px; display: flex; flex-direction: column; align-items: flex-end; gap: 16px; }
+  .result-cta-text {
+    font-family: var(--font-sans);
+    font-size: 13px; line-height: 1.55;
+    font-weight: 700;
+    color: var(--azul-dark);
+    margin: 20px 0 0;
+    text-align: left;
+    max-width: 100%;
+  }
+  .result-cta .btn { min-width: 260px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--azul-dark);
+    line-height: 1.3;
+  }
+  .field-label .label-hint {
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .input {
+    height: 42px;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 6px;
+    background: #fff;
+    padding: 0 12px;
+    font: 400 14px var(--font-sans);
+    color: var(--azul-dark);
+    width: 100%;
+    transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .input:hover { border-color: var(--azul-franqueza); }
+  .input:focus {
+    outline: none;
+    border-color: var(--azul-franqueza);
+    box-shadow: 0 0 0 3px rgba(104,123,234,0.18);
+  }
+  .input::placeholder { color: var(--text-muted); }
+  .input.is-error,
+  .input.is-error:hover,
+  .input.is-error:focus {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(216, 57, 73, 0.15);
+  }
+  .field-error {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: var(--danger-text);
+    line-height: 1.4;
+  }
+
+  /* Native select arrow */
+  .select-wrap { position: relative; }
+  .select-wrap .input {
+    padding-right: 36px;
+    cursor: pointer;
+  }
+  .select-wrap::after {
+    content: "";
+    position: absolute;
+    right: 14px; top: 50%;
+    width: 8px; height: 8px;
+    border-right: 1.6px solid var(--oliva-dark);
+    border-bottom: 1.6px solid var(--oliva-dark);
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
+  }
+
+  /* Currency / prefix */
+  .input-prefix-wrap { position: relative; }
+  .input-prefix {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    font-size: 14px; font-weight: 500; color: var(--azul-dark);
+    pointer-events: none;
+  }
+  .input-prefix-wrap .input { padding-left: 38px; }
+
+  /* Toggle proponente */
+  .switch-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 6px;
+  }
+  .switch {
+    position: relative;
+    width: 36px; height: 20px;
+    background: var(--cinza-borda);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background var(--dur-fast);
+    flex-shrink: 0;
+  }
+  .switch::after {
+    content: "";
+    position: absolute; top: 2px; left: 2px;
+    width: 16px; height: 16px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+    transition: left var(--dur-fast);
+  }
+  .switch.on { background: var(--azul-franqueza); }
+  .switch.on::after { left: 18px; }
+  .switch-label {
+    font-size: 13px; color: var(--azul-dark); font-weight: 500;
+    cursor: pointer; user-select: none;
+  }
+
+  /* 2º proponente card */
+  .proponente-card {
+    background: #FAFAFF;
+    border: 1px solid #E5E5E5;
+    border-radius: 12px;
+    margin-top: 4px;
+    overflow: hidden;
+  }
+  .proponente-card[hidden] { display: none; }
+  .proponente-card-head {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 14px 16px;
+    background: #F0F2FE;
+    border-bottom: 1px solid #E5E5E5;
+  }
+  .proponente-card-title {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--azul-dark);
+    line-height: 1.4;
+  }
+  .proponente-card-close {
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border: none;
+    background: transparent;
+    color: var(--azul-dark);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 4px;
+    display: grid; place-items: center;
+    transition: background var(--dur-fast);
+  }
+  .proponente-card-close:hover { background: rgba(0,0,0,0.06); }
+  .proponente-card-body {
+    padding: 14px 16px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  /* ==========================================================
+     Result panel — empty state
+     ========================================================== */
+  .result-empty {
+    background: #F4F5FE;
+    border-radius: 12px;
+    padding: 56px 32px;
+    text-align: center;
+    margin-top: 8px;
+  }
+  .result-empty-illu {
+    width: 168px; height: auto;
+    margin: 0 auto 12px;
+    display: block;
+  }
+  .result-empty-title {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--azul-dark);
+    margin: 0 0 8px;
+  }
+  .result-empty-sub {
+    font-size: 13px;
+    color: #4A4F60;
+    line-height: 1.55;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  /* ==========================================================
+     Result panel — bank cards (one per partner, stacked)
+     ========================================================== */
+  .result-table {
+    display: none;
+    margin-top: 4px;
+  }
+  .result-table.is-active { display: flex; flex-direction: column; flex: 1; }
+
+  .result-coverage-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .result-coverage-text {
+    font-size: 13px;
+    color: var(--azul-dark);
+  }
+  .result-coverage-text b { color: var(--azul-dark); font-weight: 700; }
+  .result-sort {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .result-sort-label {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .result-sort .select-wrap {
+    position: relative;
+  }
+  .result-sort select {
+    height: 36px;
+    padding: 0 36px 0 12px;
+    border-radius: 8px;
+    border: 1px solid #E0E0E5;
+    background: #fff;
+    font: 500 13px var(--font-sans);
+    color: var(--azul-dark);
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    min-width: 180px;
+  }
+  .result-sort select:focus { outline: 2px solid var(--oliva-dark); outline-offset: 1px; border-color: var(--oliva-dark); }
+  .result-sort .select-wrap::after {
+    content: '';
+    position: absolute;
+    right: 12px; top: 50%;
+    width: 8px; height: 8px;
+    border-right: 1.5px solid var(--azul-dark);
+    border-bottom: 1.5px solid var(--azul-dark);
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
+  }
+
+  /* Bank cards stack */
+  .bank-cards {
+    display: flex; flex-direction: column;
+    gap: 12px;
+  }
+  .bank-card {
+    background: #fff;
+    border: 1px solid #E5E5E5;
+    border-radius: 16px;
+    padding: 18px 20px;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  .bank-card:hover {
+    box-shadow: 0 6px 18px rgba(20, 30, 80, 0.06);
+    border-color: #D5D8E0;
+  }
+  .bank-card-head {
+    display: flex; align-items: center; gap: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #EFEFF3;
+    margin-bottom: 14px;
+  }
+  .bank-card-logo {
+    flex-shrink: 0;
+    width: 48px; height: 48px;
+    border-radius: 10px;
+    background: rgb(250, 250, 255);
+    display: grid; place-items: center;
+    color: var(--azul-dark);
+  }
+  .bank-card-logo svg { width: 28px; height: 28px; }
+  .bank-card-title {
+    flex: 1;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .bank-card-name {
+    font-size: 16px; font-weight: 700; color: var(--azul-dark); line-height: 1.1;
+  }
+  .bank-card-ltv {
+    font-size: 11.5px; color: var(--text-muted); font-weight: 400;
+  }
+  .bank-card-highlight {
+    text-align: right;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .bank-card-highlight-label {
+    font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .bank-card-highlight-value {
+    font-size: 18px; font-weight: 700; color: var(--azul-dark); line-height: 1.1;
+  }
+  .bank-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px 18px;
+  }
+  .bank-card-cell {
+    display: flex; flex-direction: column; gap: 3px;
+    min-width: 0;
+  }
+  .bank-card-cell-label {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    line-height: 1.25;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .bank-card-cell-label small { font-size: 10.5px; color: var(--text-muted); }
+  .bank-card-cell-value {
+    font-size: 14px;
+    color: var(--azul-dark);
+    font-weight: 500;
+    line-height: 1.25;
+    display: flex; align-items: baseline; gap: 4px;
+    flex-wrap: wrap;
+  }
+  .bank-card-cell-value .bank-cell-suffix {
+    font-size: 10.5px;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+  .bank-card-warn {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: #FFF6F4;
+    border: 1px solid #FFE2DC;
+    border-radius: 10px;
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 12px; color: var(--azul-dark);
+    line-height: 1.45;
+  }
+  .bank-card-warn .result-warn-ico { margin-top: 1px; }
+  .bank-card-warn b { color: var(--danger); }
+  .bank-card-warn-aux {
+    color: var(--text-muted);
+    display: block;
+    margin-top: 2px;
+    font-size: 11px;
+  }
+
+  .bank-grid {
+    background: rgb(250, 250, 255);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .bank-row {
+    display: grid;
+    grid-template-columns: 180px repeat(4, 1fr);
+    align-items: stretch;
+  }
+  .bank-row > * {
+    padding: 12px 10px;
+    border-top: 1px solid #E5E5E5;
+    font-size: 14px;
+    color: var(--azul-dark);
+  }
+  .bank-row.is-head > * { border-top: 0; padding-top: 8px; padding-bottom: 14px; }
+  .bank-row > *:not(:first-child) { border-left: 1px solid #E5E5E5; }
+  .bank-row.is-head > :first-child { border-top: 0; }
+
+  .bank-head {
+    text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .bank-head svg { color: var(--azul-dark); margin-bottom: 4px; }
+  .bank-head-name { font-weight: 700; font-size: 14px; color: var(--azul-dark); line-height: 1.1; }
+  .bank-head-ltv { font-size: 10px; color: var(--azul-dark); font-weight: 400; }
+
+  .bank-row-label {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
+    font-size: 14px; font-weight: 400;
+    color: var(--azul-dark); line-height: 1.3;
+  }
+  .bank-row-label-text { display: flex; align-items: flex-start; gap: 8px; }
+  .bank-row-label-text > span { display: block; }
+  .bank-row-label-text svg { flex-shrink: 0; color: var(--azul-dark); margin-top: 2px; }
+  .bank-row-label small {
+    display: block; font-weight: 400; color: var(--azul-dark);
+    font-size: 14px; margin-top: 0; line-height: 1.3;
+  }
+  .bank-row-label-info { color: var(--text-muted); cursor: help; display: inline-flex; }
+
+  .bank-cell {
+    text-align: center;
+    font-size: 14px; color: var(--azul-dark);
+    font-weight: 400; line-height: 1.35;
+    display: flex; align-items: center; justify-content: center;
+    gap: 2px; flex-wrap: wrap;
+  }
+  .bank-cell-suffix { font-size: 10px; color: var(--azul-dark); }
+  .bank-cell-strong { font-weight: 400; }
+
+  /* Desktop coverage (footer of grid) + warn */
+  .result-coverage {
+    text-align: center;
+    font-size: 12.5px; color: var(--azul-dark);
+    background: rgb(231, 235, 255);
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    padding: 12px 16px;
+  }
+  .result-coverage b { color: var(--azul-dark); }
+  .result-warn {
+    margin-top: 18px;
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 12.5px; color: var(--azul-dark); line-height: 1.5;
+  }
+  .result-warn b { color: var(--danger); }
+
+  /* Show grid on desktop, cards on mobile */
+  .result-mobile-only { display: none; }
+
+  /* Floating "back to form" button (mobile only) */
+  .fab-top {
+    position: fixed;
+    right: 16px; bottom: 20px;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: var(--azul-dark);
+    color: #fff;
+    box-shadow: 0 8px 22px rgba(20, 30, 80, 0.28);
+    display: none;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    z-index: 50;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.22s ease, transform 0.22s ease, background-color 0.22s ease;
+  }
+  .fab-top.is-visible { opacity: 1; transform: translateY(0); }
+  .fab-top:hover { background: var(--azul-dark-hover, #0f1a3d); }
+  .fab-top:focus-visible { outline: 2px solid var(--oliva-dark); outline-offset: 2px; }
+  .fab-top svg { width: 22px; height: 22px; }
+  @media (max-width: 900px) {
+    .fab-top { display: flex; }
+  }
+  @media (max-width: 900px) {
+    .result-desktop-only { display: none !important; }
+    .result-mobile-only { display: block; }
+    .result-mobile-only.result-coverage-top { display: flex; }
+    .result-mobile-only.bank-cards { display: flex; flex-direction: column; gap: 12px; }
+  }
+
+  .result-warn-ico {
+    flex-shrink: 0;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #FFE7E9;
+    color: #B8281F;
+    display: grid; place-items: center;
+    font-size: 11px; font-weight: 700;
+    margin-top: 1px;
+  }
+  .result-disclaimer {
+    margin-top: 18px;
+    font-size: 11.5px; color: var(--text-muted);
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* Buttons */
+  .btn {
+    height: 42px;
+    padding: 0 22px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    font: 600 13.5px var(--font-sans);
+    cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background-color 0.28s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.28s cubic-bezier(0.4, 0, 0.2, 1), color 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1), transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+  }
+  .btn:active { transform: scale(.99); }
+  .btn svg { width: 14px; height: 14px; }
+
+  .btn-primary {
+    background: #4F5DCC;
+    color: #fff;
+  }
+  .btn-primary:hover { background: #4F62D1 !important; color: #fff !important; }
+  .btn-primary:active {
+    background: var(--azul-medium) !important;
+    color: #fff !important;
+    border-color: var(--azul-medium) !important;
+    outline: none;
+    transform: none;
+  }
+  .btn-primary:focus-visible {
+    outline: 2px solid var(--azul-medium);
+    outline-offset: 2px;
+  }
+
+  .btn-outline {
+    background: #fff;
+    color: var(--azul-franqueza);
+    border-color: var(--azul-franqueza);
+  }
+  .btn-outline:hover { background: #F4F5FE; }
+
+  .btn[disabled], .btn.is-disabled {
+    background: #ECECF1;
+    color: #5C6470;
+    border-color: transparent;
+    cursor: not-allowed;
+  }
+  .btn[disabled]:hover, .btn.is-disabled:hover { background: #ECECF1; }
+
+  /* Reload icon spinning hint */
+  .icon-spin {
+    transition: transform var(--dur-med);
+  }
+  .btn-primary:hover .icon-spin { transform: rotate(180deg); }
+
+  /* ==========================================================
+     Confirm modal
+     ========================================================== */
+  .confirm-overlay {
+    position: fixed; inset: 0;
+    background: rgba(19, 28, 37, 0.55);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 30000;
+    padding: 20px;
+  }
+  .confirm-overlay.open { display: flex; }
+  .confirm-card {
+    background: #fff; border-radius: 16px;
+    width: 100%; max-width: 440px;
+    padding: 28px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+    font-family: var(--font-sans);
+    color: var(--azul-dark);
+  }
+  .confirm-title {
+    font-size: 18px; font-weight: 700; margin: 0 0 10px;
+  }
+  .confirm-desc {
+    font-size: 14px; line-height: 1.5; margin: 0 0 24px;
+    color: #4A4F5C;
+  }
+  .confirm-actions {
+    display: flex; gap: 12px; justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+  .confirm-actions .btn { min-width: 140px; min-height: 44px; }
+  @media (max-width: 480px) {
+    .confirm-actions { flex-direction: column-reverse; }
+    .confirm-actions .btn { width: 100%; }
+  }
+
+  /* ==========================================================
+     Tweaks panel
+     ========================================================== */
+  .tw-panel {
+    position: fixed; right: 24px; bottom: 110px; z-index: 200;
+    width: 280px;
+    background: #fff;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 14px;
+    box-shadow: 0 30px 80px -20px rgba(19,28,37,0.30);
+    font-family: var(--font-sans);
+    color: var(--azul-dark);
+    display: none;
+    overflow: hidden;
+  }
+  .tw-panel.open { display: block; }
+  .tw-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px;
+    background: var(--azul-dark); color: #fff;
+  }
+  .tw-head h4 {
+    margin: 0; font-size: 12px; font-weight: 600;
+    letter-spacing: .06em; text-transform: uppercase;
+  }
+  .tw-close {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: rgba(255,255,255,0.12); border: none;
+    color: #fff; cursor: pointer; font-size: 14px; line-height: 1;
+    display: grid; place-items: center;
+  }
+  .tw-close:hover { background: rgba(255,255,255,0.22); }
+  .tw-body { padding: 14px 14px 16px; display: flex; flex-direction: column; gap: 14px; }
+  .tw-section { display: flex; flex-direction: column; gap: 8px; }
+  .tw-label {
+    font-size: 10.5px; font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--text-muted);
+  }
+  .tw-seg {
+    display: flex; gap: 4px;
+    background: var(--cinza-suave); border-radius: 8px; padding: 3px;
+  }
+  .tw-seg button {
+    flex: 1; padding: 6px 6px;
+    background: transparent; border: none;
+    font-family: var(--font-sans); font-size: 11.5px; font-weight: 500;
+    color: var(--azul-dark); cursor: pointer;
+    border-radius: 6px;
+  }
+  .tw-seg button.active {
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.10);
+  }
+
+  /* ==========================================================
+     Site footer (Franq global)
+     ========================================================== */
+  .site-footer {
+    background: #23272E;
+    color: #cfd3db;
+    font-family: 'DM Sans', Arial, sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    padding: 40px 160px 30px;
+    margin-top: 80px;
+  }
+  .site-footer-logo-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px 0 24px;
+  }
+  .site-footer-logo {
+    height: 36px;
+    width: 120px;
+    display: block;
+  }
+  .site-footer-divider {
+    height: 1px;
+    width: 100%;
+    background: #3A3F47;
+  }
+  .site-footer-links {
+    display: flex;
+    justify-content: space-between;
+    gap: 64px;
+    padding: 40px 0;
+  }
+  .site-footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+  }
+  .site-footer-col-title {
+    color: #fff;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 26px;
+    margin-bottom: 8px;
+  }
+  .site-footer-col a {
+    color: #cfd3db;
+    font-size: 16px;
+    font-weight: 400;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .site-footer-col a:hover { color: #fff; }
+  .site-footer-socials {
+    display: flex;
+    gap: 32px;
+    margin-top: 12px;
+  }
+  .site-footer-socials a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #cfd3db;
+    transition: color 0.2s ease;
+  }
+  .site-footer-socials a:hover { color: #fff; }
+  .site-footer-socials svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+  }
+  .site-footer-legal {
+    color: #cfd3db;
+    font-size: 12px;
+    line-height: 18px;
+    text-align: justify;
+    padding: 24px 0;
+    margin: 0;
+  }
+  .site-footer-copy {
+    color: #cfd3db;
+    font-size: 12px;
+    line-height: 18px;
+    padding-top: 16px;
+    margin: 0;
+    text-align: center;
+  }
+
+  /* ==========================================================
+     Responsive
+     ========================================================== */
+  @media (max-width: 900px) {
+    .two-col { grid-template-columns: 1fr; gap: 28px; }
+    .vdivider { display: none; }
+    .page { padding: 20px 20px 80px; }
+    /* (mobile) bank cards collapse to 2 columns */
+    .bank-card-grid { grid-template-columns: repeat(2, 1fr); gap: 12px 14px; }
+    .bank-card-head { gap: 10px; }
+    .bank-card-logo { width: 40px; height: 40px; }
+    .bank-card-logo svg { width: 24px; height: 24px; }
+    .bank-card-name { font-size: 15px; }
+    .bank-card-highlight-value { font-size: 16px; }
+    .topbar { padding: 16px 20px; height: 72px; }
+    .topbar-logo { height: 24px; }
+    .topbar-username { display: none; }
+
+    /* (mobile) site footer — stack columns, comfortable padding */
+    .site-footer { padding: 32px 20px 24px; margin-top: 48px; font-size: 14px; line-height: 1.5; }
+    .site-footer-logo-row { padding: 8px 0 18px; }
+    .site-footer-links {
+      flex-direction: column;
+      gap: 28px;
+      padding: 28px 0;
+    }
+    .site-footer-col { gap: 8px; }
+    .site-footer-col-title { font-size: 14px; margin-bottom: 4px; }
+    .site-footer-col a { font-size: 14px; }
+    .site-footer-socials { gap: 20px; margin-top: 8px; }
+    .site-footer-legal, .site-footer-copy { font-size: 11.5px; padding: 18px 0; line-height: 1.55; }
+
+    /* (mobile) buttons full-width */
+    .form-actions {
+      flex-direction: column-reverse;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .form-actions .btn { width: 100%; min-width: 0; }
+    .form-actions .btn-link-clear { align-self: center; }
+    .result-cta { align-items: stretch; }
+    .result-cta .btn { width: 100%; min-width: 0; }
+
+    /* ==========================================================
+       Mínimo de toque 48x48 (mobile)
+       ========================================================== */
+    /* Inputs / selects */
+    .input { height: 48px; font-size: 16px; }
+    .select-wrap .input { padding-right: 40px; }
+
+    /* Botões principais */
+    .btn { height: 48px; min-height: 48px; }
+    .confirm-actions .btn { min-height: 48px; }
+
+    /* Topbar */
+    .topbar-whatsapp {
+      width: 48px; height: 48px;
+    }
+    .topbar-enter {
+      min-height: 48px; padding: 12px 4px;
+    }
+
+    /* Breadcrumb links/buttons — alvo de toque */
+    .crumbs { gap: 4px; flex-wrap: wrap; }
+    .crumbs a, .crumbs button, .crumbs .crumb-current {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 4px;
+    }
+
+    /* Switch (proponente) — manter visual, ampliar área de toque */
+    .switch-row { gap: 12px; min-height: 48px; align-items: center; }
+    .switch {
+      position: relative;
+    }
+    .switch::before {
+      content: "";
+      position: absolute;
+      inset: -14px -6px;
+      /* expande a área tocável para 48px de altura mínima */
+    }
+    .switch-label {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    /* Botão fechar do card 2º proponente */
+    .proponente-card-close {
+      width: 48px; height: 48px;
+      font-size: 22px;
+      margin: -12px -12px -12px 0;
+    }
+    .proponente-card-head { align-items: center; }
+
+    /* Link "Limpar campos" */
+    .btn-link-clear {
+      min-height: 48px;
+      padding: 12px 8px;
+    }
+
+    /* Footer — links com altura de toque adequada */
+    .site-footer-col { gap: 4px; }
+    .site-footer-col a {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 0;
+    }
+    .site-footer-socials a {
+      width: 48px; height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    /* Tweaks panel close */
+    .tw-close { width: 48px; height: 48px; }
+
+    /* Sort select (mobile result) */
+    #sortBy { height: 48px; }
+
+    /* ==========================================================
+       Mínimo 16px para textos correntes (mobile)
+       ========================================================== */
+    body { font-size: 16px; }
+    .crumbs, .crumbs a, .crumbs button { font-size: 16px; line-height: 1.45; }
+    .field-label { font-size: 16px; }
+    .field-error { font-size: 16px; }
+    .input { font-size: 16px; }
+    .input-prefix { font-size: 16px; }
+    .switch-label { font-size: 16px; }
+    .proponente-card-title { font-size: 16px; }
+    .btn-link-clear { font-size: 16px; }
+    .result-cta-text { font-size: 16px; }
+    .result-empty-sub { font-size: 16px; }
+    .result-coverage-text { font-size: 16px; }
+    .result-sort-label { font-size: 16px; }
+    .bank-card-name { font-size: 18px; }
+    .bank-card-ltv { font-size: 16px; }
+    .bank-card-highlight-label { font-size: 16px; }
+    .bank-card-highlight-value { font-size: 22px; }
+    .bank-card-cell-label { font-size: 16px; }
+    .bank-card-cell-label small { font-size: 16px; }
+    .bank-card-cell-value { font-size: 16px; }
+    .bank-card-cell-value .bank-cell-suffix { font-size: 16px; }
+    .bank-card-warn { font-size: 16px; }
+    .bank-card-warn-aux { font-size: 16px; }
+    .result-disclaimer { font-size: 16px; }
+    .confirm-desc { font-size: 16px; }
+    .site-footer { font-size: 16px; }
+    .site-footer-col-title { font-size: 16px; }
+    .site-footer-col a { font-size: 16px; }
+    .site-footer-legal, .site-footer-copy { font-size: 16px; line-height: 1.6; }
+    .btn { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- =================== TOPBAR =================== -->
+<header class="topbar" aria-label="Navegação principal">
+  <img class="topbar-logo" src="assets/logo-topbar.svg" alt="Franq" />
+  <div class="topbar-right">
+    <div class="topbar-userblock">
+      <div class="topbar-avatar" aria-label="Fran Tavares">FT</div>
+      <span class="topbar-username">Fran Tavares</span>
+    </div>
+    <div class="topbar-divider"></div>
+    <button type="button" class="topbar-enter" aria-label="Entrar">
+      <span>Entrar</span>
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M27 14H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M15 10L11 14L15 18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M24.9603 21C23.4463 23.3693 21.205 25.1838 18.5725 26.1715C15.94 27.1592 13.0583 27.2668 10.3595 26.4781C7.66068 25.6895 5.2903 24.0471 3.60387 21.7973C1.91744 19.5476 1.00586 16.8117 1.00586 14C1.00586 11.1883 1.91744 8.45243 3.60387 6.20266C5.2903 3.95289 7.66068 2.31051 10.3595 1.52186C13.0583 0.733215 15.94 0.840805 18.5725 1.8285C21.205 2.81619 23.4463 4.63074 24.9603 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- =================== PAGE HERO =================== -->
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <p class="page-hero-eyebrow">
+      <svg width="16" height="16" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+        <path d="M17 8.36364V17C17 17.5523 16.5523 18 16 18H4C3.44772 18 3 17.5523 3 17V8.36364" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M19 10L10 2L1 10" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M13 18V13C13 12.4477 12.5523 12 12 12H8C7.44772 12 7 12.4477 7 13V18" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+      <span>Simulador de Crédito Imobiliário</span>
+    </p>
+    <h1>Simule o seu financiamento imobiliário e descubra <span class="accent">as melhores condições do mercado</span>.</h1>
+    <p>Tudo isso com o apoio do seu <b>Personal Banker</b>.</p>
+  </div>
+</section>
+
+<!-- =================== PAGE =================== -->
+<main class="page">
+
+
+  <!-- Two-column layout -->
+  <section class="two-col">
+    <!-- ============ FORM ============ -->
+    <div class="form-col">
+      <h2 class="section-title">Informe os dados para simular</h2>
+
+      <form class="form" id="simForm" autocomplete="off">
+        <div class="field">
+          <label class="field-label" for="f-tipo">Tipo do imóvel</label>
+          <div class="select-wrap">
+            <select class="input" id="f-tipo">
+              <option value="" hidden selected>Selecione</option>
+              <option>Apartamento</option>
+              <option>Casa</option>
+              <option>Terreno</option>
+              <option>Comercial</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="f-valor">Valor do imóvel</label>
+          <div class="input-prefix-wrap">
+            <span class="input-prefix">R$</span>
+            <input class="input" id="f-valor" inputmode="numeric" placeholder="0,00" />
+          </div>
+          <p class="field-error" id="err-valor" hidden>Valor mínimo do imóvel é R$ 90.000,00.</p>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="f-financ">Valor do financiamento</label>
+          <div class="input-prefix-wrap">
+            <span class="input-prefix">R$</span>
+            <input class="input" id="f-financ" inputmode="numeric" placeholder="0,00" />
+          </div>
+          <p class="field-error" id="err-financ" hidden>O valor do financiamento não pode ser maior que 80% do valor do imóvel.</p>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="f-prazo">Prazo de pagamento <span class="label-hint">(meses)</span></label>
+          <input class="input" id="f-prazo" inputmode="numeric" placeholder="Ex.: 360" />
+          <p class="field-error" id="err-prazo" hidden>Prazo deve estar entre 12 e 420 meses.</p>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="f-estado">Estado do imóvel</label>
+          <div class="select-wrap">
+            <select class="input" id="f-estado">
+              <option value="" hidden selected>Selecione</option>
+              <option>AC</option>
+              <option>AL</option>
+              <option>AP</option>
+              <option>AM</option>
+              <option>BA</option>
+              <option>CE</option>
+              <option>DF</option>
+              <option>ES</option>
+              <option>GO</option>
+              <option>MA</option>
+              <option>MT</option>
+              <option>MS</option>
+              <option>MG</option>
+              <option>PA</option>
+              <option>PB</option>
+              <option>PR</option>
+              <option>PE</option>
+              <option>PI</option>
+              <option>RJ</option>
+              <option>RN</option>
+              <option>RS</option>
+              <option>RO</option>
+              <option>RR</option>
+              <option>SC</option>
+              <option>SP</option>
+              <option>SE</option>
+              <option>TO</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="f-nasc">Data de nascimento do cliente</label>
+          <input class="input" id="f-nasc" placeholder="DD/MM/AAAA" inputmode="numeric" maxlength="10" />
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="f-renda">Refine a simulação utilizando a renda bruta mensal do seu cliente</label>
+          <div class="input-prefix-wrap">
+            <span class="input-prefix">R$</span>
+            <input class="input" id="f-renda" inputmode="numeric" placeholder="0,00" />
+          </div>
+        </div>
+
+        <div class="switch-row">
+          <div class="switch" id="switchProponente" role="switch" aria-checked="false" tabindex="0"></div>
+          <label class="switch-label" for="switchProponente">Adicionar 2º proponente</label>
+        </div>
+
+        <!-- 2º Proponente — toggled via switch -->
+        <div class="proponente-card" id="proponenteCard" hidden>
+          <div class="proponente-card-head">
+            <span class="proponente-card-title">Adicione um segundo proponente para aumentar as chances de aprovação</span>
+            <button class="proponente-card-close" type="button" id="btnCloseProponente" aria-label="Remover segundo proponente">×</button>
+          </div>
+          <div class="proponente-card-body">
+            <div class="field">
+              <label class="field-label" for="f-nasc-2">Data de nascimento do 2º proponente</label>
+              <input class="input" id="f-nasc-2" placeholder="DD/MM/AAAA" inputmode="numeric" maxlength="10" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="f-renda-2">Renda bruta mensal do 2º proponente</label>
+              <div class="input-prefix-wrap">
+                <span class="input-prefix">R$</span>
+                <input class="input" id="f-renda-2" inputmode="numeric" placeholder="0,00" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-link-clear" type="button" id="btnLimpar" style="display:none">
+            Limpar campos
+          </button>
+          <button class="btn btn-primary" type="button" id="btnSimular">
+            Simular financiamento
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ============ DIVIDER ============ -->
+    <div class="vdivider" aria-hidden="true"></div>
+
+    <!-- ============ RESULT ============ -->
+    <div class="result-col">
+      <h2 class="section-title">Ofertas disponíveis:</h2>
+
+      <!-- Empty state -->
+      <div class="result-empty" id="resultEmpty">
+        <img class="result-empty-illu" src="assets/empty-state-woman.svg" alt="" />
+        <h3 class="result-empty-title">Falta pouco para você ter acesso às melhores ofertas de crédito imobiliário do mercado</h3>
+        <p class="result-empty-sub">
+          Informe ao lado seus dados para simular a solução ideal.
+        </p>
+      </div>
+
+      <!-- Active result -->
+      <div class="result-table" id="resultTable">
+        <!-- Mobile: coverage + sort, above stacked cards -->
+        <div class="result-coverage-top result-mobile-only">
+          <div class="result-coverage-text">
+            Simulação disponível em <b>4</b> de <b>4</b> parceiros para este produto.
+          </div>
+          <div class="result-sort">
+            <label class="result-sort-label" for="sortBy">Ordenar por</label>
+            <div class="select-wrap">
+              <select id="sortBy">
+                <option value="parcela">Menor parcela</option>
+                <option value="taxa">Menor taxa</option>
+                <option value="valor">Maior valor financiado</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desktop: original table -->
+        <div class="bank-grid result-desktop-only" id="bankGrid"><!-- populated by JS via SIM_ICONS --></div>
+
+        <!-- Mobile: stacked cards -->
+        <div class="bank-cards result-mobile-only" id="bankCards"><!-- populated by JS --></div>
+
+        <!-- Desktop: coverage + Inter warn at footer (original layout) -->
+        <div class="result-coverage result-desktop-only">
+          Simulação disponível em <b>4</b> de nossos <b>4</b> parceiros para este produto.
+        </div>
+
+        <div class="result-warn result-desktop-only">
+          <span class="result-warn-ico">!</span>
+          <div>
+            <b>Inter:</b> O parceiro Inter financia no máximo 75%. Por isso ajustamos o valor de financiamento para R$ 150.000,00. <span style="color: var(--text-muted);">(LTV máximo: 75% • Financiamento máximo: R$ 150.000,00)</span>
+          </div>
+        </div>
+
+        <div class="result-disclaimer">
+          *Apenas para fins de simulação. Taxas e valores sujeitos à aprovação de crédito e às demais condições do produto vigentes no momento da contratação.
+        </div>
+
+        <div class="result-cta">
+          <p class="result-cta-text">Para dar continuidade à contratação do seu crédito imobiliário, precisamos que você crie uma conta. Assim, seu personal banker poderá acompanhar seu processo de forma personalizada e segura.</p>
+          <button class="btn btn-primary" type="button" id="btnCadastrar">
+            Cadastre-se
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- =================== SITE FOOTER =================== -->
+<footer class="site-footer" data-footer="true">
+  <div class="site-footer-logo-row">
+    <img class="site-footer-logo" src="assets/logo-colorido-franq.svg" alt="Franq" />
+  </div>
+  <div class="site-footer-divider"></div>
+  <div class="site-footer-links">
+    <div class="site-footer-col">
+      <div class="site-footer-col-title">Franq</div>
+      <a href="https://franq.com.br/sobre-nos" target="_blank" rel="noopener noreferrer">Sobre nós</a>
+      <a href="https://franq.gupy.io/" target="_blank" rel="noopener noreferrer">Trabalhe na Franq</a>
+      <a href="https://franq.com.br/termos" target="_blank" rel="noopener noreferrer">Termos de Uso e Política de Privacidade</a>
+    </div>
+    <div class="site-footer-col">
+      <div class="site-footer-col-title">Fale com a Franq</div>
+      <a href="tel:+554832053801">+55 (48) 3205-3801</a>
+      <a href="mailto:contato@franq.com.br">contato@franq.com.br</a>
+      <a href="https://maps.app.goo.gl/vYWxR5CAyNeuaMKs6" target="_blank" rel="noopener noreferrer">Endereço</a>
+    </div>
+    <div class="site-footer-col">
+      <div class="site-footer-col-title">Conteúdos</div>
+      <a href="https://franq.com.br/blog" target="_blank" rel="noopener noreferrer">Blog</a>
+      <div class="site-footer-socials">
+        <a href="https://www.linkedin.com/company/franq-open-banking/" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="currentColor" d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.55C0 23.23.79 24 1.77 24h20.45C23.21 24 24 23.23 24 22.27V1.72C24 .77 23.21 0 22.22 0z"/></svg>
+        </a>
+        <a href="https://www.youtube.com/c/franqopenbanking" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="currentColor" d="M23.5 6.2a3.02 3.02 0 0 0-2.13-2.14C19.48 3.5 12 3.5 12 3.5s-7.48 0-9.37.56A3.02 3.02 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3.02 3.02 0 0 0 2.13 2.14C4.52 20.5 12 20.5 12 20.5s7.48 0 9.37-.56a3.02 3.02 0 0 0 2.13-2.14C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.6 15.6V8.4l6.27 3.6-6.27 3.6z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/franqopenbanking/" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="currentColor" d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23a3.7 3.7 0 0 1-.9 1.38 3.7 3.7 0 0 1-1.38.9c-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16zM12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63a5.86 5.86 0 0 0-2.13 1.38A5.86 5.86 0 0 0 .63 4.14C.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.31.79.73 1.46 1.38 2.13a5.86 5.86 0 0 0 2.13 1.38c.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56a5.86 5.86 0 0 0 2.13-1.38 5.86 5.86 0 0 0 1.38-2.13c.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91a5.86 5.86 0 0 0-1.38-2.13A5.86 5.86 0 0 0 19.86.63c-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zm0 10.16A4 4 0 1 1 12 8a4 4 0 0 1 0 8zm6.41-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="site-footer-divider"></div>
+  <p class="site-footer-legal">A Franq Tecnologia S.A. (CNPJ 32.709.829/0001-54) é uma plataforma de tecnologia que integra instituições financeiras a bancários autônomos, e realiza a divulgação de produtos por meio de seus correspondentes bancários WIN Correspondente Bancário LTDA (CNPJ 40.673.528/0001-46) e K.ZA Correspondente Bancário LTDA (CNPJ 42.637.945/0001-69), nos termos da Resolução CMN nº 4.935/21, operando com indicação de clientes e apoio administrativo para instituições financeiras parceiras. As informações contidas nesta página foram redigidas pelo nosso time de curadoria a partir de dados públicos do parceiro. A Franq não se responsabiliza por eventuais alterações nas características ou features dos produtos, assim como taxas, critérios de renda ou processos de contratação. A Franq não é uma instituição bancária ou agente de distribuição de qualquer tipo de produto financeiro ou securitário, valor mobiliário ou semelhantes. A Franq é uma plataforma que fornece aos nossos parceiros e agentes autônomos de investimentos, as ferramentas para a divulgação desses produtos e serviços. O trabalho da Franq e dos Personal Bankers não deve ser interpretado como consultoria financeira. Tanto a Franq como seus parceiros não cobram nenhum valor adiantado pela prestação de serviços ou concessão de crédito. Sempre desconfie de atividades fraudulentas.</p>
+  <div class="site-footer-divider"></div>
+  <p class="site-footer-copy">Copyright © 2026. Franq CNPJ 32.709.829/0001-54 – “Franq” e a marca Franq são trademarks da empresa. Todos os direitos reservados. Av. Madre Benvenuta, 1313, Sta. Mônica – Florianópolis, Santa Catarina – Brasil</p>
+</footer>
+
+<!-- =================== CONFIRM MODAL =================== -->
+<div class="confirm-overlay" id="confirmOverlay" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+  <div class="confirm-card">
+    <h3 class="confirm-title" id="confirmTitle">Deseja limpar todos os dados?</h3>
+    <p class="confirm-desc">Esta ação não pode ser desfeita.</p>
+    <div class="confirm-actions">
+      <button type="button" class="btn btn-outline" id="btnConfirmNo">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btnConfirmYes">Sim, limpar</button>
+    </div>
+  </div>
+</div>
+
+<!-- =================== TWEAKS PANEL =================== -->
+<div class="tw-panel" id="twPanel">
+  <div class="tw-head">
+    <h4>Tweaks</h4>
+    <button class="tw-close" type="button" id="twClose" aria-label="Fechar">×</button>
+  </div>
+  <div class="tw-body">
+    <div class="tw-section">
+      <span class="tw-label">Estado do resultado</span>
+      <div class="tw-seg" id="seg-result">
+        <button data-val="empty" class="active">Vazio</button>
+        <button data-val="filled">Com simulação</button>
+      </div>
+    </div>
+    <div class="tw-section">
+      <span class="tw-label">Progresso (etapa)</span>
+      <div class="tw-seg" id="seg-progress">
+        <button data-val="25">1/4</button>
+        <button data-val="50" class="active">2/4</button>
+        <button data-val="75">3/4</button>
+        <button data-val="100">4/4</button>
+      </div>
+    </div>
+    <div class="tw-section">
+      <span class="tw-label">Densidade</span>
+      <div class="tw-seg" id="seg-density">
+        <button data-val="compact">Compacto</button>
+        <button data-val="cozy" class="active">Padrão</button>
+        <button data-val="comfy">Confortável</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Floating "back to top" button — mobile only -->
+<button type="button" class="fab-top" id="fabTop" aria-label="Voltar ao formulário">
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M12 19V5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M5 12L12 5L19 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+  </svg>
+</button>
+
+<script src="sim-icons.js"></script>
+<script>
+  /* =====================================================
+     Interactivity
+     ===================================================== */
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  /* =====================================================
+     Bank simulation grid — render from data
+     ===================================================== */
+  /* =====================================================
+     Bank simulation cards — render from data
+     ===================================================== */
+  const BANKS = [
+    {
+      key: 'bradesco', name: 'Bradesco', ltvMax: 80,
+      primeira: 1996.93, ultima: 448.66,
+      taxa: 11.99, taxaIdx: 'TR',
+      renda: 6656.42, prazo: 360, valor: 160000,
+      ajuste: null,
+    },
+    {
+      key: 'itau', name: 'Itaú', ltvMax: 80,
+      primeira: 1957.23, ultima: 448.53,
+      taxa: 11.6, taxaIdx: 'TR',
+      renda: 6524.11, prazo: 360, valor: 160000,
+      ajuste: null,
+    },
+    {
+      key: 'santander', name: 'Santander', ltvMax: 80,
+      primeira: 1969.86, ultima: 448.56,
+      taxa: 11.69, taxaIdx: 'TR',
+      renda: 6566.19, prazo: 360, valor: 160000,
+      ajuste: null,
+    },
+    {
+      key: 'inter', name: 'Inter', ltvMax: 75,
+      primeira: 1658.03, ultima: 433.99,
+      taxa: 9.99, taxaIdx: 'IPCA',
+      renda: 5526.77, prazo: 360, valor: 150000,
+      ajuste: { ltv: 75, financ: 150000 },
+    },
+  ];
+
+  const fmtBRL = (n) => 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmtPct = (n) => String(n).replace('.', ',') + '%';
+
+  function bankCardHTML(b) {
+    const I = window.SIM_ICONS || {};
+    const logo = I['bank_' + b.key] || '';
+    const ajuste = b.ajuste ? `
+      <div class="bank-card-warn">
+        <span class="result-warn-ico">!</span>
+        <div>
+          <b>${b.name}:</b> O parceiro ${b.name} financia no máximo ${b.ajuste.ltv}%. Por isso ajustamos o valor de financiamento para ${fmtBRL(b.ajuste.financ)}.
+          <span class="bank-card-warn-aux">(LTV máximo: ${b.ajuste.ltv}% • Financiamento máximo: ${fmtBRL(b.ajuste.financ)})</span>
+        </div>
+      </div>
+    ` : '';
+    return `
+      <article class="bank-card" data-bank="${b.key}">
+        <header class="bank-card-head">
+          <div class="bank-card-logo">${logo}</div>
+          <div class="bank-card-title">
+            <span class="bank-card-name">${b.name}</span>
+            <span class="bank-card-ltv">LTV ${b.ltvMax}% máx.</span>
+          </div>
+          <div class="bank-card-highlight">
+            <span class="bank-card-highlight-label">Primeira parcela</span>
+            <span class="bank-card-highlight-value">${fmtBRL(b.primeira)}</span>
+          </div>
+        </header>
+        <div class="bank-card-grid">
+          <div class="bank-card-cell">
+            <span class="bank-card-cell-label">Última parcela</span>
+            <span class="bank-card-cell-value">${fmtBRL(b.ultima)}</span>
+          </div>
+          <div class="bank-card-cell">
+            <span class="bank-card-cell-label">Taxa de juros <small>(a partir de)</small></span>
+            <span class="bank-card-cell-value">${fmtPct(b.taxa)} <span class="bank-cell-suffix">+ ${b.taxaIdx}</span></span>
+          </div>
+          <div class="bank-card-cell">
+            <span class="bank-card-cell-label">Valor financiado</span>
+            <span class="bank-card-cell-value">${fmtBRL(b.valor)}</span>
+          </div>
+          <div class="bank-card-cell">
+            <span class="bank-card-cell-label">Renda sugerida</span>
+            <span class="bank-card-cell-value">${fmtBRL(b.renda)}</span>
+          </div>
+          <div class="bank-card-cell">
+            <span class="bank-card-cell-label">Prazo</span>
+            <span class="bank-card-cell-value">${b.prazo} meses</span>
+          </div>
+          <div class="bank-card-cell">
+            <span class="bank-card-cell-label">Indexador</span>
+            <span class="bank-card-cell-value">${b.taxaIdx}</span>
+          </div>
+        </div>
+        ${ajuste}
+      </article>
+    `;
+  }
+
+  function sortBanks(banks, mode) {
+    const arr = banks.slice();
+    if (mode === 'parcela') arr.sort((a, b) => a.primeira - b.primeira);
+    else if (mode === 'taxa') arr.sort((a, b) => a.taxa - b.taxa);
+    else if (mode === 'valor') arr.sort((a, b) => b.valor - a.valor);
+    return arr;
+  }
+
+  function renderBankCards() {
+    const root = $('#bankCards');
+    if (!root) return;
+    const sortBy = ($('#sortBy') && $('#sortBy').value) || 'parcela';
+    const sorted = sortBanks(BANKS, sortBy);
+    root.innerHTML = sorted.map(bankCardHTML).join('');
+  }
+
+  // Desktop grid (table) — original layout
+  const ROWS = [
+    { key: 'primeira', label: 'Primeira parcela:', strong: true,
+      values: ['R$ 1.996,93', 'R$ 1.957,23', 'R$ 1.969,86', 'R$ 1.658,03'] },
+    { key: 'ultima', label: 'Última parcela:',
+      values: ['R$ 448,66', 'R$ 448,53', 'R$ 448,56', 'R$ 433,99'] },
+    { key: 'taxa', label: 'Taxa de juros:', sub: '(a partir de)',
+      values: [
+        { v: '11.99%', s: '+ TR' },
+        { v: '11.6%', s: '+ TR' },
+        { v: '11.69%', s: '+ TR' },
+        { v: '9.99%', s: '+ IPCA' },
+      ] },
+    { key: 'renda', label: 'Renda sugerida:',
+      values: ['R$ 6.656,42', 'R$ 6.524,11', 'R$ 6.566,19', 'R$ 5.526,77'] },
+    { key: 'prazo', label: 'Prazo:',
+      values: ['360 meses', '360 meses', '360 meses', '360 meses'] },
+    { key: 'valor', label: 'Valor financiado:', info: true,
+      values: ['R$ 160.000,00', 'R$ 160.000,00', 'R$ 160.000,00', 'R$ 150.000,00'] },
+  ];
+  function renderBankGrid() {
+    const I = window.SIM_ICONS || {};
+    const root = $('#bankGrid');
+    if (!root) return;
+    let html = '';
+    html += '<div class="bank-row is-head">';
+    html += '<div class="bank-row-label"><span class="bank-row-label-text"></span></div>';
+    for (const b of BANKS) {
+      html += `<div class="bank-head">${I['bank_' + b.key] || ''}<span class="bank-head-name">${b.name}</span><span class="bank-head-ltv">${b.ltvMax}% máx.</span></div>`;
+    }
+    html += '</div>';
+    for (const r of ROWS) {
+      html += '<div class="bank-row">';
+      const ico = I['row_' + r.key] || '';
+      const sub = r.sub ? `<br><small>${r.sub}</small>` : '';
+      const info = r.info ? `<span class="bank-row-label-info" title="LTV máximo do parceiro">${I.row_valor_aux || ''}</span>` : '';
+      html += `<div class="bank-row-label"><span class="bank-row-label-text">${ico}<span>${r.label}${sub}</span></span>${info}</div>`;
+      for (const v of r.values) {
+        if (typeof v === 'object' && v !== null) {
+          html += `<div class="bank-cell"><span>${v.v}</span><span class="bank-cell-suffix">${v.s}</span></div>`;
+        } else {
+          html += `<div class="bank-cell${r.strong ? ' bank-cell-strong' : ''}">${v}</div>`;
+        }
+      }
+      html += '</div>';
+    }
+    root.innerHTML = html;
+  }
+  renderBankGrid();
+  renderBankCards();
+  if ($('#sortBy')) {
+    $('#sortBy').addEventListener('change', renderBankCards);
+  }
+
+  // Switch — 2º proponente
+  const sw = $('#switchProponente');
+  const proponenteCard = $('#proponenteCard');
+  function setProponenteOpen(open) {
+    sw.classList.toggle('on', open);
+    sw.setAttribute('aria-checked', open ? 'true' : 'false');
+    if (open) proponenteCard.removeAttribute('hidden');
+    else proponenteCard.setAttribute('hidden', '');
+  }
+  sw.addEventListener('click', () => setProponenteOpen(!sw.classList.contains('on')));
+  sw.addEventListener('keydown', (e) => {
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); sw.click(); }
+  });
+  $('#btnCloseProponente').addEventListener('click', () => setProponenteOpen(false));
+
+  // Simular financiamento → flips empty -> filled
+  const empty = $('#resultEmpty');
+  const table = $('#resultTable');
+  function setResultState(state) {
+    if (state === 'filled') {
+      empty.style.display = 'none';
+      table.classList.add('is-active');
+    } else {
+      empty.style.display = '';
+      table.classList.remove('is-active');
+    }
+  }
+  const btnSimular = $('#btnSimular');
+  const btnLimpar = $('#btnLimpar');
+
+  // Validation helpers
+  const fValor = $('#f-valor');
+  const fPrazo = $('#f-prazo');
+  const errValor = $('#err-valor');
+  const errPrazo = $('#err-prazo');
+
+  function parseBR(str) {
+    // "200.000,00" -> 200000.00; "200000" -> 200000
+    const s = String(str || '').trim().replace(/\./g, '').replace(',', '.');
+    const n = parseFloat(s);
+    return isNaN(n) ? 0 : n;
+  }
+  function parseInt10(str) {
+    const n = parseInt(String(str || '').trim(), 10);
+    return isNaN(n) ? 0 : n;
+  }
+  function showFieldError(input, errEl, show) {
+    input.classList.toggle('is-error', show);
+    if (show) errEl.removeAttribute('hidden');
+    else errEl.setAttribute('hidden', '');
+  }
+  function validate() {
+    let ok = true;
+    let firstInvalid = null;
+
+    // Required fields - all must be filled
+    const required = [
+      { el: $('#f-tipo'), kind: 'select' },
+      { el: $('#f-valor'), kind: 'currency', min: 90000, errEl: errValor },
+      { el: $('#f-financ'), kind: 'currency', errEl: errFinanc, customCheck: (n) => {
+          const im = parseBR(fValor.value);
+          if (im > 0 && n > im) return true; // invalid
+          return false;
+        }
+      },
+      { el: $('#f-prazo'), kind: 'integer', min: 12, max: 420, errEl: errPrazo },
+      { el: $('#f-estado'), kind: 'select' },
+      { el: $('#f-nasc'), kind: 'date' },
+      { el: $('#f-renda'), kind: 'currency' },
+    ];
+
+    required.forEach(({ el, kind, min, max, errEl, customCheck }) => {
+      const v = String(el.value || '').trim();
+      let invalid = !v;
+      if (!invalid) {
+        if (kind === 'currency') {
+          const n = parseBR(v);
+          if (n <= 0) invalid = true;
+          if (min != null && n < min) invalid = true;
+          if (customCheck && customCheck(n)) invalid = true;
+        } else if (kind === 'integer') {
+          const n = parseInt10(v);
+          if (n <= 0) invalid = true;
+          if (min != null && n < min) invalid = true;
+          if (max != null && n > max) invalid = true;
+        } else if (kind === 'date') {
+          if (!/^\d{2}\/\d{2}\/\d{4}$/.test(v)) invalid = true;
+        }
+      }
+      el.classList.toggle('is-error', invalid);
+      if (errEl) {
+        if (invalid) errEl.removeAttribute('hidden');
+        else errEl.setAttribute('hidden', '');
+      }
+      if (invalid) {
+        ok = false;
+        if (!firstInvalid) firstInvalid = el;
+      }
+    });
+
+    if (firstInvalid) {
+      try { firstInvalid.focus({ preventScroll: false }); } catch (_) {}
+    }
+    return ok;
+  }
+  // Live validation: clear error while typing; show range error only on blur (after user finishes)
+  fValor.addEventListener('input', () => {
+    showFieldError(fValor, errValor, false);
+    refreshSimularState();
+  });
+  fValor.addEventListener('blur', () => {
+    const v = String(fValor.value || '').trim();
+    if (!v) { showFieldError(fValor, errValor, false); return; }
+    const n = parseBR(fValor.value);
+    showFieldError(fValor, errValor, n < 90000);
+    // Re-check financ since it depends on valor
+    validateFinanc();
+  });
+
+  // Financiamento <= Valor do imóvel
+  const fFinanc = $('#f-financ');
+  const errFinanc = $('#err-financ');
+  function validateFinanc() {
+    const v = String(fFinanc.value || '').trim();
+    if (!v) { showFieldError(fFinanc, errFinanc, false); return; }
+    const f = parseBR(fFinanc.value);
+    const imovel = parseBR(fValor.value);
+    const max = imovel * 0.8;
+    const invalid = f <= 0 || (imovel > 0 && f > max);
+    showFieldError(fFinanc, errFinanc, invalid);
+  }
+  fFinanc.addEventListener('input', () => {
+    showFieldError(fFinanc, errFinanc, false);
+    refreshSimularState();
+  });
+  fFinanc.addEventListener('blur', validateFinanc);
+  fPrazo.addEventListener('input', () => {
+    showFieldError(fPrazo, errPrazo, false);
+    refreshSimularState();
+  });
+  fPrazo.addEventListener('blur', () => {
+    const v = String(fPrazo.value || '').trim();
+    if (!v) { showFieldError(fPrazo, errPrazo, false); return; }
+    const p = parseInt10(fPrazo.value);
+    showFieldError(fPrazo, errPrazo, p < 12 || p > 420);
+  });
+
+  // Live: clear is-error from any field once it has a value, and toggle button enabled state
+  function isFieldFilled(el) {
+    return String(el.value || '').trim() !== '';
+  }
+  function refreshSimularState() {
+    const required = ['#f-tipo','#f-valor','#f-financ','#f-prazo','#f-estado','#f-nasc','#f-renda'];
+    const allFilled = required.every(s => isFieldFilled($(s)));
+    btnSimular.disabled = !allFilled;
+    btnSimular.classList.toggle('is-disabled', !allFilled);
+  }
+  document.querySelectorAll('.form input, .form select').forEach(el => {
+    el.addEventListener('input', () => {
+      if (isFieldFilled(el)) el.classList.remove('is-error');
+      refreshSimularState();
+    });
+    el.addEventListener('change', () => {
+      if (isFieldFilled(el)) el.classList.remove('is-error');
+      refreshSimularState();
+    });
+  });
+
+  // Currency mask (BR): formats as 1.234.567,89 while typing
+  function formatBRL(digits) {
+    digits = String(digits || '').replace(/\D/g, '');
+    if (!digits) return '';
+    digits = digits.replace(/^0+/, '') || '0';
+    while (digits.length < 3) digits = '0' + digits;
+    const cents = digits.slice(-2);
+    let intPart = digits.slice(0, -2);
+    intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return intPart + ',' + cents;
+  }
+  function attachCurrencyMask(el) {
+    if (!el) return;
+    // Normalize any pre-filled value to mask format
+    if (el.value) {
+      const d = el.value.replace(/\D/g, '');
+      el.value = formatBRL(d);
+    }
+    el.addEventListener('input', () => {
+      const digits = el.value.replace(/\D/g, '');
+      el.value = formatBRL(digits);
+    });
+  }
+  function attachIntegerMask(el) {
+    if (!el) return;
+    el.addEventListener('input', () => {
+      el.value = el.value.replace(/\D/g, '');
+    });
+  }
+  function attachDateMask(el) {
+    if (!el) return;
+    el.addEventListener('input', () => {
+      let d = el.value.replace(/\D/g, '').slice(0, 8);
+      let out = d;
+      if (d.length > 4) out = d.slice(0,2) + '/' + d.slice(2,4) + '/' + d.slice(4);
+      else if (d.length > 2) out = d.slice(0,2) + '/' + d.slice(2);
+      el.value = out;
+    });
+  }
+  attachDateMask($('#f-nasc'));
+  attachDateMask($('#f-nasc-2'));
+
+  ['#f-valor', '#f-financ', '#f-renda', '#f-renda-2'].forEach(s => attachCurrencyMask($(s)));
+  attachIntegerMask($('#f-prazo'));
+
+  btnSimular.addEventListener('click', () => {
+    if (!validate()) return;
+    setResultState('filled');
+    const tn = [...btnSimular.childNodes].find(n => n.nodeType === 3 && n.textContent.trim());
+    if (tn) tn.textContent = ' Atualizar simulação ';
+    btnSimular.classList.remove('btn-primary');
+    btnSimular.classList.add('btn-outline');
+    btnLimpar.style.display = '';
+  });
+
+  // Confirmation modal for "Nova simulação"
+  const confirmOverlay = $('#confirmOverlay');
+  const btnConfirmNo = $('#btnConfirmNo');
+  const btnConfirmYes = $('#btnConfirmYes');
+  function openConfirm() { confirmOverlay.classList.add('open'); }
+  function closeConfirm() { confirmOverlay.classList.remove('open'); }
+  btnConfirmNo.addEventListener('click', closeConfirm);
+  confirmOverlay.addEventListener('click', (e) => { if (e.target === confirmOverlay) closeConfirm(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeConfirm(); });
+
+  function clearAllFields() {
+    document.querySelectorAll('.form input, .form select').forEach(el => {
+      if (el.tagName === 'SELECT') {
+        el.selectedIndex = 0;
+      } else {
+        el.value = '';
+      }
+      el.classList.remove('is-error');
+    });
+    document.querySelectorAll('.field-error').forEach(el => { el.setAttribute('hidden', ''); });
+    setProponenteOpen(false);
+    refreshSimularState();
+  }
+
+  btnLimpar.addEventListener('click', () => {
+    openConfirm();
+  });
+  btnConfirmYes.addEventListener('click', () => {
+    clearAllFields();
+    closeConfirm();
+  });
+
+  // Initial state
+  refreshSimularState();
+
+  // Progress
+  function setProgress(pct) {
+    $('#progressBar').style.width = pct + '%';
+  }
+
+  /* =====================================================
+     Tweaks panel — host protocol
+     ===================================================== */
+  /* =====================================================
+     Floating "back to top" button — mobile only
+     ===================================================== */
+  const fabTop = $('#fabTop');
+  if (fabTop) {
+    const onScroll = () => {
+      fabTop.classList.toggle('is-visible', window.scrollY > 240);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    fabTop.addEventListener('click', () => {
+      // Scroll to the form's first field for fast iteration
+      const target = document.querySelector('.form') || document.body;
+      const top = target.getBoundingClientRect().top + window.scrollY - 16;
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    });
+  }
+
+  const panel = $('#twPanel');
+  window.addEventListener('message', (ev) => {
+    const t = ev.data && ev.data.type;
+    if (t === '__activate_edit_mode') panel.classList.add('open');
+    if (t === '__deactivate_edit_mode') panel.classList.remove('open');
+  });
+  window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+  $('#twClose').addEventListener('click', () => {
+    panel.classList.remove('open');
+    window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+  });
+
+  // Segmented control helper
+  function bindSeg(id, onChange) {
+    const root = $('#' + id);
+    if (!root) return;
+    root.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      $$('button', root).forEach(b => b.classList.toggle('active', b === btn));
+      onChange(btn.dataset.val);
+    });
+  }
+
+  bindSeg('seg-result', v => setResultState(v));
+  bindSeg('seg-progress', v => setProgress(parseInt(v, 10)));
+  bindSeg('seg-density', v => {
+    const map = { compact: 0.85, cozy: 1, comfy: 1.15 };
+    document.documentElement.style.setProperty('--tw-d', map[v] || 1);
+    document.body.style.fontSize = (14 * (map[v] || 1)) + 'px';
+  });
+</script>
+</body>
+</html>
