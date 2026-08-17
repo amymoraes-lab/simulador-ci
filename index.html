@@ -31,21 +31,14 @@
      Page hero (title block under topbar)
      ========================================================== */
   .page-hero {
-    background: var(--azul-dark);
+    background: linear-gradient(to right, #131c25, #334076);
     color: #fff;
     padding: 56px 40px 60px;
     border-bottom: 1px solid var(--cinza-borda);
     position: relative;
     overflow: hidden;
   }
-  .page-hero::before {
-    content: '';
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(circle at 88% 30%, rgba(104,123,234,0.35), transparent 55%),
-      linear-gradient(135deg, rgba(8,14,28,0.0) 0%, rgba(19,28,57,0.25) 60%, rgba(91,108,245,0.25) 100%);
-    pointer-events: none;
-  }
+  .page-hero::before { display: none; }
   .page-hero-inner {
     position: relative; z-index: 1;
     max-width: 1280px; margin: 0 auto;
@@ -78,7 +71,7 @@
     font-family: var(--font-display);
     font-weight: 400;
     font-size: 50px; line-height: 1.15; letter-spacing: -0.01em;
-    margin: 0; max-width: 800px;
+    margin: 0; max-width: 1080px;
     color: #fff;
   }
   .page-hero h1 .accent { color: #E6E9FD; }
