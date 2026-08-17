@@ -537,6 +537,11 @@
     transform: translateY(-70%) rotate(45deg);
     pointer-events: none;
   }
+  /* "Ordenar por" com o mesmo dropdown custom dos outros, porém compacto */
+  .result-sort .select-custom { min-width: 200px; }
+  .result-sort .select-custom::after { display: none; }
+  .result-sort .sel-control { padding: 10px 14px; font-size: 14px; }
+  .result-sort .sel-item { font-size: 14px; }
 
   /* Bank cards stack */
   .bank-cards {
@@ -1153,6 +1158,53 @@
     .site-footer-legal, .site-footer-copy { font-size: 16px; line-height: 1.6; }
     .btn { font-size: 16px; }
   }
+
+  /* ===================== Tela de cadastro ===================== */
+  #screen-cadastro { display: none; }
+  body.show-cadastro .page-hero,
+  body.show-cadastro main.page { display: none; }
+  body.show-cadastro #screen-cadastro { display: block; }
+  body.show-cadastro .site-footer { margin-top: 0; }
+
+  .cad { display: flex; width: 100%; min-height: calc(100vh - 92px); background: #fff; }
+  .cad-banner {
+    flex-basis: 45.5%; flex-shrink: 0; position: relative; overflow: hidden;
+    background: linear-gradient(160deg, #334076 0%, #131c25 78%);
+    display: flex; align-items: flex-end; padding: 56px 48px;
+  }
+  .cad-banner::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(circle at 28% 18%, rgba(104,123,234,0.38), transparent 55%);
+  }
+  .cad-banner-title {
+    position: relative; z-index: 1; margin: 0;
+    font-family: var(--font-display); font-weight: 400;
+    font-size: 44px; line-height: 1.1; letter-spacing: -0.5px;
+    color: #e2ece4; max-width: 340px;
+  }
+  .cad-form-col { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; padding: 56px 40px; }
+  .cad-form { width: 100%; max-width: 477px; display: flex; flex-direction: column; gap: 16px; }
+  .cad-logo { height: 30px; width: auto; }
+  .cad-title { font-family: var(--font-display); font-weight: 400; font-size: 32px; line-height: 1.2; letter-spacing: -0.32px; color: var(--azul-dark); margin: 0; }
+  .cad-fields { display: flex; flex-direction: column; gap: 16px; }
+  .cad-actions { display: flex; flex-direction: column; gap: 12px; }
+  .cad-actions .btn { width: 100%; }
+  .cad-legal { font-size: 12px; line-height: 1.45; color: #3b3b3b; margin: 4px 0 0; }
+  .cad-legal .lnk { color: var(--azul-franqueza); text-decoration: underline; cursor: pointer; }
+  .cad-divider { display: flex; align-items: center; gap: 12px; color: #3b3b3b; font-size: 14px; margin: 4px 0; }
+  .cad-divider::before, .cad-divider::after { content: ''; flex: 1; height: 1px; background: #ccc; }
+  .cad-social {
+    display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+    background: #fff; border: 1px solid #ccc; border-radius: 8px; padding: 12px 24px; cursor: pointer;
+    font: 500 16px var(--font-sans); color: #2e3944; transition: background var(--dur-fast);
+  }
+  .cad-social:hover { background: #f7f8fa; }
+  .cad-social svg { width: 18px; height: 18px; flex: none; }
+  @media (max-width: 900px) {
+    .cad-banner { display: none; }
+    .cad-form-col { padding: 32px 20px; }
+    .cad { min-height: 0; }
+  }
 </style>
 </head>
 <body>
@@ -1352,7 +1404,7 @@
           </div>
           <div class="result-sort">
             <label class="result-sort-label" for="sortBy">Ordenar por</label>
-            <div class="select-wrap">
+            <div class="select-wrap select-custom">
               <select id="sortBy">
                 <option value="parcela">Menor parcela</option>
                 <option value="taxa">Menor taxa</option>
@@ -1394,6 +1446,66 @@
     </div>
   </section>
 </main>
+
+<!-- =================== TELA DE CADASTRO =================== -->
+<section id="screen-cadastro" aria-label="Cadastro">
+  <div class="cad">
+    <div class="cad-banner">
+      <p class="cad-banner-title">Tenha assessoria exclusiva</p>
+    </div>
+    <div class="cad-form-col">
+      <form class="cad-form" autocomplete="off" onsubmit="return false">
+        <img class="cad-logo" src="assets/logo-colorido-franq.svg" alt="Franq" />
+        <h2 class="cad-title">Cadastre-se</h2>
+        <div class="cad-fields">
+          <div class="field">
+            <label class="field-label" for="cad-nome">Nome completo</label>
+            <input class="input" id="cad-nome" autocomplete="name" placeholder="Digite seu nome completo" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="cad-email">E-mail</label>
+            <input class="input" id="cad-email" type="email" autocomplete="email" placeholder="Digite seu e-mail" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="cad-celular">Celular</label>
+            <input class="input" id="cad-celular" inputmode="numeric" autocomplete="tel" placeholder="(00) 00000-0000" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="cad-cpf">CPF</label>
+            <input class="input" id="cad-cpf" inputmode="numeric" placeholder="000.000.000-00" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="cad-nasc">Data de nascimento</label>
+            <input class="input" id="cad-nasc" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" />
+          </div>
+        </div>
+        <div class="cad-actions">
+          <button class="btn btn-primary" type="button" id="cad-criar">Criar cadastro</button>
+          <button class="btn btn-outline" type="button" id="cad-voltar">Voltar</button>
+          <p class="cad-legal">*Ao continuar, você permite que seu Personal Banker Fran Tavares compartilhe seus dados pessoais com a Franq. Além disso, você aceita as <span class="lnk">Políticas de Privacidade</span>, <span class="lnk">Termos de Uso</span> e os <span class="lnk">Termos de Autorização SCR.</span></p>
+        </div>
+        <div class="cad-divider"><span>ou</span></div>
+        <div class="cad-actions">
+          <button class="cad-social" type="button">
+            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+              <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+              <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+              <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+            </svg>
+            <span>Continuar com o Google</span>
+          </button>
+          <button class="cad-social" type="button">
+            <svg viewBox="0 0 24 24" fill="#1877F2" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+            <span>Continuar com o Facebook</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
 
 <!-- =================== SITE FOOTER =================== -->
 <footer class="site-footer" data-footer="true">
@@ -1933,7 +2045,8 @@
       placeholder: o.hidden || o.value === ''
     }));
     const placeholderLabel = (opts.find(o => o.placeholder) || {}).label || 'Selecione';
-    const labelEl = wrap.closest('.field') && wrap.closest('.field').querySelector('.field-label');
+    const labelEl = (wrap.closest('.field') && wrap.closest('.field').querySelector('.field-label'))
+      || (select.id && document.querySelector('label[for="' + select.id + '"]'));
 
     const control = document.createElement('button');
     control.type = 'button';
@@ -2011,6 +2124,15 @@
 
     sync();
   });
+
+  // Tela de cadastro: mostra/esconde (troca de tela dentro da pagina)
+  (function () {
+    const btnCad = document.getElementById('btnCadastrar');
+    const btnVoltar = document.getElementById('cad-voltar');
+    function show(v) { document.body.classList.toggle('show-cadastro', v); window.scrollTo(0, 0); }
+    if (btnCad) btnCad.addEventListener('click', () => show(true));
+    if (btnVoltar) btnVoltar.addEventListener('click', () => show(false));
+  })();
 
   // Initial state
   refreshSimularState();
