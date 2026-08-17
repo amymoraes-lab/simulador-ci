@@ -6,14 +6,6 @@
 <title>Simulador de Crédito Imobiliário · Franq</title>
 <link rel="stylesheet" href="colors_and_type.css" />
 <style>
-  @font-face {
-    font-family: 'NIB Pro';
-    src: url('assets/fonts/NibPro-SemiBold.ttf') format('truetype');
-    font-weight: 400 700;
-    font-style: normal;
-    font-display: swap;
-  }
-
   /* WCAG AA-safe tokens (≥4.5:1 sobre branco) */
   :root {
     --text-muted: #5C6470;     /* substitui --oliva-dark p/ texto: 6.4:1 */
@@ -83,7 +75,7 @@
     display: block;
   }
   .page-hero h1 {
-    font-family: 'NIB Pro', 'DM Serif Display', Georgia, serif;
+    font-family: var(--font-display);
     font-weight: 400;
     font-size: 36px; line-height: 1.15; letter-spacing: -0.01em;
     margin: 0; max-width: 800px;
@@ -297,12 +289,11 @@
   }
 
   .input {
-    height: 42px;
-    border: 1px solid var(--cinza-borda);
-    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
     background: #fff;
-    padding: 0 12px;
-    font: 400 14px var(--font-sans);
+    padding: 12px 16px;
+    font: 400 16px/24px var(--font-sans);
     color: var(--azul-dark);
     width: 100%;
     transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
@@ -313,19 +304,17 @@
   .input:focus {
     outline: none;
     border-color: var(--azul-franqueza);
-    box-shadow: 0 0 0 3px rgba(104,123,234,0.18);
   }
   .input::placeholder { color: var(--text-muted); }
   .input.is-error,
   .input.is-error:hover,
   .input.is-error:focus {
-    border-color: var(--danger);
-    box-shadow: 0 0 0 3px rgba(216, 57, 73, 0.15);
+    border-color: #e02424;
   }
   .field-error {
     margin: 6px 0 0;
     font-size: 12px;
-    color: var(--danger-text);
+    color: #e02424;
     line-height: 1.4;
   }
 
@@ -345,6 +334,49 @@
     transform: translateY(-70%) rotate(45deg);
     pointer-events: none;
   }
+
+  /* Dropdown custom (segue a identidade da página) — substitui a lista nativa do SO */
+  .select-custom { position: relative; }
+  .select-custom::after { display: none; }
+  .select-custom > select {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    opacity: 0; pointer-events: none;
+  }
+  .sel-control {
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0; border-radius: 12px; background: #fff;
+    font: 400 16px/24px var(--font-sans); color: var(--azul-dark); text-align: left;
+    cursor: pointer;
+    transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+  }
+  .sel-control:hover { border-color: var(--azul-franqueza); }
+  .select-custom.is-open .sel-control {
+    border-color: var(--azul-franqueza);
+  }
+  .select-custom.is-error .sel-control {
+    border-color: #e02424;
+  }
+  .sel-value { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sel-value.is-placeholder { color: var(--text-muted); }
+  .select-custom.has-value .sel-value { font-weight: 500; }
+  .sel-chevron { flex: none; width: 14px; height: 14px; color: var(--azul-dark); transition: transform .15s ease; }
+  .select-custom.is-open .sel-chevron { transform: rotate(180deg); }
+  .sel-panel {
+    position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 40;
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(15,23,42,.12); overflow: hidden; padding: 4px; display: none;
+  }
+  .select-custom.is-open .sel-panel { display: block; }
+  .sel-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    height: 40px; padding: 0 12px; border-radius: 8px;
+    font: 400 15px var(--font-sans); color: var(--azul-dark); cursor: pointer;
+  }
+  .sel-item:hover, .sel-item.active { background: #F2F4FE; }
+  .sel-item.selected { font-weight: 600; }
+  .sel-check { flex: none; width: 15px; height: 15px; color: var(--azul-franqueza); opacity: 0; }
+  .sel-item.selected .sel-check { opacity: 1; }
 
   /* Currency / prefix */
   .input-prefix-wrap { position: relative; }
@@ -736,7 +768,7 @@
   .btn {
     height: 42px;
     padding: 0 22px;
-    border-radius: 6px;
+    border-radius: 8px;
     border: 1px solid transparent;
     font: 600 13.5px var(--font-sans);
     cursor: pointer;
@@ -748,14 +780,12 @@
   .btn svg { width: 14px; height: 14px; }
 
   .btn-primary {
-    background: #4F5DCC;
+    background: var(--azul-franqueza);
     color: #fff;
   }
-  .btn-primary:not(:disabled):not(.is-disabled):hover { background: #4F62D1 !important; color: #fff !important; }
-  .btn-primary:active {
-    background: var(--azul-medium) !important;
-    color: #fff !important;
-    border-color: var(--azul-medium) !important;
+  .btn-primary:not(:disabled):not(.is-disabled):hover { filter: brightness(0.96); }
+  .btn-primary:not(:disabled):not(.is-disabled):active {
+    filter: brightness(0.92);
     outline: none;
     transform: none;
   }
@@ -1182,7 +1212,7 @@
       <form class="form" id="simForm" autocomplete="off">
         <div class="field">
           <label class="field-label" for="f-tipo">Tipo do imóvel</label>
-          <div class="select-wrap">
+          <div class="select-wrap select-custom">
             <select class="input" id="f-tipo">
               <option value="" hidden selected>Selecione</option>
               <option>Apartamento</option>
@@ -1877,6 +1907,7 @@
     document.querySelectorAll('.form input, .form select').forEach(el => {
       if (el.tagName === 'SELECT') {
         el.selectedIndex = 0;
+        el.dispatchEvent(new Event('change', { bubbles: true })); // sincroniza dropdowns custom
       } else {
         el.value = '';
       }
@@ -1893,6 +1924,98 @@
   btnConfirmYes.addEventListener('click', () => {
     clearAllFields();
     closeConfirm();
+  });
+
+  // Dropdown custom (segue a identidade da página) — só onde .select-custom está presente
+  document.querySelectorAll('.select-custom').forEach(wrap => {
+    const select = wrap.querySelector('select');
+    if (!select || wrap.dataset.selReady) return;
+    wrap.dataset.selReady = '1';
+    select.tabIndex = -1;
+    select.setAttribute('aria-hidden', 'true');
+
+    const opts = Array.from(select.options).map(o => ({
+      value: o.value, label: o.textContent.trim(),
+      placeholder: o.hidden || o.value === ''
+    }));
+    const placeholderLabel = (opts.find(o => o.placeholder) || {}).label || 'Selecione';
+    const labelEl = wrap.closest('.field') && wrap.closest('.field').querySelector('.field-label');
+
+    const control = document.createElement('button');
+    control.type = 'button';
+    control.className = 'sel-control';
+    control.setAttribute('aria-haspopup', 'listbox');
+    control.setAttribute('aria-expanded', 'false');
+    if (labelEl) control.setAttribute('aria-label', labelEl.textContent.trim());
+    control.innerHTML =
+      '<span class="sel-value"></span>' +
+      '<svg class="sel-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>';
+
+    const panel = document.createElement('div');
+    panel.className = 'sel-panel';
+    panel.setAttribute('role', 'listbox');
+    panel.innerHTML = opts.filter(o => !o.placeholder).map(o =>
+      '<div class="sel-item" role="option" data-value="' + o.value.replace(/"/g, '&quot;') + '">' +
+        '<span>' + o.label + '</span>' +
+        '<svg class="sel-check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l3.5 3.5L13 5"/></svg>' +
+      '</div>').join('');
+
+    wrap.appendChild(control);
+    wrap.appendChild(panel);
+
+    const valueEl = control.querySelector('.sel-value');
+    const items = Array.from(panel.querySelectorAll('.sel-item'));
+    let open = false, active = -1;
+
+    function sync() {
+      const v = select.value;
+      const has = !!v;
+      wrap.classList.toggle('has-value', has);
+      valueEl.classList.toggle('is-placeholder', !has);
+      valueEl.textContent = has ? ((opts.find(o => o.value === v) || {}).label || v) : placeholderLabel;
+      items.forEach(it => it.classList.toggle('selected', it.dataset.value === v));
+    }
+    function paintActive() { items.forEach((it, i) => it.classList.toggle('active', i === active)); }
+    function scrollActive() { if (items[active]) items[active].scrollIntoView({ block: 'nearest' }); }
+    function openPanel() {
+      if (open) return;
+      open = true; wrap.classList.add('is-open'); control.setAttribute('aria-expanded', 'true');
+      active = items.findIndex(it => it.classList.contains('selected')); paintActive();
+    }
+    function closePanel() {
+      open = false; wrap.classList.remove('is-open'); control.setAttribute('aria-expanded', 'false'); active = -1; paintActive();
+    }
+    function choose(v) {
+      select.value = v;
+      select.dispatchEvent(new Event('input', { bubbles: true }));
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+      sync(); closePanel(); control.focus();
+    }
+
+    control.addEventListener('click', () => { open ? closePanel() : openPanel(); });
+    items.forEach((it, i) => {
+      it.addEventListener('mousedown', e => { e.preventDefault(); choose(it.dataset.value); });
+      it.addEventListener('mousemove', () => { if (active !== i) { active = i; paintActive(); } });
+    });
+    control.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown') { e.preventDefault(); if (!open) { openPanel(); return; } active = Math.min(active + 1, items.length - 1); paintActive(); scrollActive(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); if (!open) { openPanel(); return; } active = Math.max(active - 1, 0); paintActive(); scrollActive(); }
+      else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!open) openPanel(); else if (active >= 0 && items[active]) choose(items[active].dataset.value); }
+      else if (e.key === 'Escape') { if (open) { e.preventDefault(); closePanel(); } }
+    });
+    control.addEventListener('blur', () => { setTimeout(() => { if (open && !wrap.contains(document.activeElement)) closePanel(); }, 120); });
+    document.addEventListener('mousedown', e => { if (open && !wrap.contains(e.target)) closePanel(); });
+
+    // validação foca o <select> escondido → joga o foco pro controle visível
+    select.addEventListener('focus', () => { try { control.focus(); } catch (_) {} });
+    // reset / mudanças programáticas do <select>
+    select.addEventListener('change', sync);
+    // espelha o estado de erro (a validação adiciona .is-error no <select>)
+    const mirrorError = () => wrap.classList.toggle('is-error', select.classList.contains('is-error'));
+    new MutationObserver(mirrorError).observe(select, { attributes: true, attributeFilter: ['class'] });
+    mirrorError();
+
+    sync();
   });
 
   // Initial state
