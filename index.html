@@ -744,14 +744,14 @@
     transition: background-color 0.28s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.28s cubic-bezier(0.4, 0, 0.2, 1), color 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1), transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
   }
-  .btn:active { transform: scale(.99); }
+  .btn:not(:disabled):not(.is-disabled):active { transform: scale(.99); }
   .btn svg { width: 14px; height: 14px; }
 
   .btn-primary {
     background: #4F5DCC;
     color: #fff;
   }
-  .btn-primary:hover { background: #4F62D1 !important; color: #fff !important; }
+  .btn-primary:not(:disabled):not(.is-disabled):hover { background: #4F62D1 !important; color: #fff !important; }
   .btn-primary:active {
     background: var(--azul-medium) !important;
     color: #fff !important;
@@ -777,13 +777,18 @@
     border-color: transparent;
     cursor: not-allowed;
   }
-  .btn[disabled]:hover, .btn.is-disabled:hover { background: #ECECF1; }
+  .btn[disabled]:hover, .btn.is-disabled:hover {
+    background: #ECECF1 !important;
+    color: #5C6470 !important;
+    cursor: not-allowed;
+    transform: none;
+  }
 
   /* Reload icon spinning hint */
   .icon-spin {
     transition: transform var(--dur-med);
   }
-  .btn-primary:hover .icon-spin { transform: rotate(180deg); }
+  .btn-primary:not(:disabled):not(.is-disabled):hover .icon-spin { transform: rotate(180deg); }
 
   /* ==========================================================
      Confirm modal
